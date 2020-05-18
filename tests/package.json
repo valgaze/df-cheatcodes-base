@@ -1,0 +1,13 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "cd .. && npm run test",
+    "m": "cd .. && npm run m $1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,47 @@
+{
+  "name": "df-cheatcodes-base",
+  "types": "./dist/src/index.d.ts",
+  "version": "0.0.5",
+  "description": "",
+  "main": "./dist/src/index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "patch": "npm version patch",
+    "prepublish": "echo 'any pre publish tasks like bumping or rebuilding, tests'",
+    "m": "clear && cd tests && ts-node $1",
+    "start": "npm run build",
+    "build": "tsc && cp .eslintrc.js dist/",
+    "killdist": "rm -rf dist/ 2>/dev/null",
+    "test": "npm run killdist && npm run build && node_modules/.bin/tape dist/tests/*.test.js",
+    "coverage": "istanbul cover node_modules/.bin/tape ./dist/tests/*.test.js"
+  },
+  "keywords": [
+    "Intelligent Agents",
+    "Chatbots",
+    "Conversational Interfaces for Teams",
+    "DevTooling"
+  ],
+  "author": "Victor Algaze",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/lodash.get": "^4.4.6",
+    "@types/tape": "^4.13.0",
+    "istanbul": "^0.4.5",
+    "nodemon": "^2.0.4",
+    "np": "^6.2.3",
+    "prettier": "^2.0.5",
+    "tape": "^5.0.0",
+    "tape-await": "^0.1.2",
+    "ts-node": "^8.8.2",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.9.2"
+  },
+  "peerDependencies": {},
+  "dependencies": {
+    "@types/lodash.has": "^4.5.6",
+    "axios": "^0.19.2",
+    "lodash.get": "^4.4.2",
+    "lodash.has": "^4.5.2",
+    "pb-util": "^0.1.3"
+  }
+}
