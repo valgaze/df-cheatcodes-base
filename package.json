@@ -1,7 +1,7 @@
 {
   "name": "df-cheatcodes-base",
   "types": "./dist/src/index.d.ts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "./dist/src/index.js",
   "scripts": {
