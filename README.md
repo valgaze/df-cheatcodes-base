@@ -1,4 +1,4 @@
-![df-cheats](./docs/assets/df_cheatcodes.gif)
+![df-cheats](https://raw.githubusercontent.com/valgaze/df-cheatcodes-base/master/docs/assets/df_cheatcodes.gif)
 
 ```
 tl:dr; So easy you might think you're cheating at dialogflow!
@@ -16,7 +16,7 @@ df-cheatcodes-base is a library exposing useful aliases, shortcuts, functionalit
 
 The big idea is to make it simple and **fast** to quickly iterate on conversational experiences.
 
-This library is used with the main df-cheatcodes bundle, but broken out for use in building rich conversational interfaces
+This library is used with the main df-cheatcodes bundle, but broken out for use in building rich conversational interfaces, usually in a frontend context.
 
 ## Other Components
 
