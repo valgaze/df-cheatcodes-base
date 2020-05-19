@@ -122,6 +122,20 @@ export class RequestCheat {
   public getConfig(): DFCheatRequestConfig {
     return this.config;
   }
+
+  /**
+   * Update backend used in requests
+   * @param backend: http://localhost:8000/chat
+   *
+   */
+  public updateLanguageCode(languageCode: string) {
+    if (languageCode) {
+      this.config.languageCode = languageCode;
+      this.languageCode = languageCode;
+
+      this.__debug(`RequestCheat languageCode set to: ${this.config.backend}`);
+    }
+  }
   /**
    * Update backend used in requests
    * @param backend: http://localhost:8000/chat
@@ -208,7 +222,7 @@ export class RequestCheat {
       base.queryInput.event.languageCode = languageCode;
     } else if (config.kind === "text") {
       base.queryInput.text.text = config.content;
-      base.queryInput.languageCode = this.languageCode;
+      base.queryInput.text.languageCode = this.languageCode;
     }
 
     if (config.requestData && Object.keys(config.requestData).length) {
