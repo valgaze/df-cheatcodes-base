@@ -16,7 +16,7 @@ df-cheatcodes-base is a library exposing useful aliases, shortcuts, functionalit
 
 The big idea is to make it simple and **fast** to quickly iterate on conversational experiences.
 
-This library is used with the main df-cheatcodes bundle, but broken out for use in building rich conversational interfaces, usually in a frontend context.
+This library can be used stand-alone (no peerDependencies) but is used by the the main \*\*[df-cheatcodes bundle]() broken out for use in building rich conversational interfaces, usually in a frontend context.
 
 ## Other Components
 
@@ -31,12 +31,6 @@ _Most helpful for "backend"/server stuff, collection of helpers and docs to augm
 - **Details:** **[https://github.com/valgaze/df-cheatkit](https://github.com/valgaze/df-cheatkit)**
 
 _Fully-loaded DialogFlow "starter" project with an agent, fulfillment template, and a frontend that renders rich components. Also has various ergonomic features to speed development like live-reload, types, tunneling, easy deploy/bundling to a web server or optimized for cloud functions_
-
-### df-cheatchat
-
-- **Details:** **[https://github.com/valgaze/df-cheatchat](https://github.com/valgaze/df-cheatchat)**
-
-_A fun "retro" DialogFlow frontend interface that can render rich components with many conversational design & debugging tools._
 
 ## License
 
