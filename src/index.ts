@@ -351,6 +351,8 @@ export class RequestCheat {
     // AOG Suggestions
     suggestions = _.get(aog, "richResponse.suggestions", []);
 
+    const linkOutSuggestion = _.get(aog, "richResponse.linkOutSuggestion", {});
+
     // 3) AoG "user pickers" like listSelect & carouselSelect
     // https://actions-on-google.github.io/actions-on-google-nodejs/classes/conversation_helper.list.html
     let userSelect = null; // Should only be one, will update this value if any other pickers
@@ -566,6 +568,7 @@ export class RequestCheat {
     const finalPayload = {
       components,
       suggestions,
+      linkOutSuggestion,
     };
     return finalPayload;
   }
