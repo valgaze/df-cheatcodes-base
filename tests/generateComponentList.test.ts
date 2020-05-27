@@ -250,6 +250,7 @@ test("<generateComponents: creates rich component list from simplifyRespones (mu
       },
     ],
     suggestions: [],
+    linkOutSuggestion: {},
   };
 
   t.deepEqual(actual, expected);
@@ -386,6 +387,7 @@ test("<generateComponents: creates rich component list (aog + fulfillment messag
       },
     ],
     suggestions: [],
+    linkOutSuggestion: {},
   };
 
   t.deepEqual(actual, expected);

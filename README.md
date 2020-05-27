@@ -16,7 +16,7 @@ df-cheatcodes-base is a library exposing useful aliases, shortcuts, functionalit
 
 The big idea is to make it simple and **fast** to quickly iterate on conversational experiences.
 
-This library can be used stand-alone (no peerDependencies) but is used by the the main \*\*[df-cheatcodes bundle]() broken out for use in building rich conversational interfaces, usually in a frontend context.
+This library can be used stand-alone (no peerDependencies) or with the main **[df-cheatcodes bundle](https://github.com/valgaze/df-cheatcodes.)** On its own, it can be useful for building conversational interfaces
 
 ## Other Components
 
