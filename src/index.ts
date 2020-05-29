@@ -54,6 +54,7 @@ export class RequestCheat {
   private axiosInst: any;
   public languageCode: string;
   public session: string;
+  public _session: string;
   public transformgrpc: boolean;
   public debug: boolean;
   public otherplatforms: string[];
@@ -74,6 +75,7 @@ export class RequestCheat {
     this.session = this.config.session
       ? this.config.session
       : RequestCheat.buildSessionId();
+    this._session = this.session;
     this.transformgrpc = this.config.transformgrpc
       ? this.config.transformgrpc
       : defaults.transformgrpc;
@@ -165,6 +167,18 @@ export class RequestCheat {
   }
 
   /**
+   * Update whether requests should transform
+   * @param backend: http://localhost:8000/chat
+   *
+   */
+  public updateSession(session: string) {
+    this.config.session = session;
+    this.session = session;
+    this._session = this.session;
+    this.__debug(`RequestCheat session set to: ${this.config.session}`);
+  }
+
+  /**
    * @param input: Data to transform if necessary
    * @param flags: override any "global" config (like transformgrpc), see DFCheatRequestConfig
    *
@@ -177,13 +191,101 @@ export class RequestCheat {
     }
     if (transform) {
       result = this._json2proto(input);
+      this.__debug(`Transformed JSON <> Proto`, input, result);
     }
     return result;
   }
 
   /**
+   * Alias for creating a request object for text
+   * @param text: http://localhost:8000/chat
+   * @param requestData: {a:1,b:2,c:3}
+   *
+   * Whether grpc gets transformed & other items depends on global config
+   *
+   */
+  public text(text: string, requestData: any) {
+    const payload = {
+      kind: "text" as RequestKinds,
+      content: text,
+      requestData,
+    };
+    return this.buildRequest(payload);
+  }
+
+  /**
+   * Send text
+   * @param text: "hello world"
+   * @param? requestData: {a:1,b:2,c:3}
+   * @flags? DFCheatRequestConfig: {session:"1234567", requestData: {a:1,b:2}}
+   *
+   */
+  public sendText(
+    text: string,
+    requestData?: any,
+    flags?: DFCheatRequestConfig
+  ) {
+    const payload = {
+      kind: "text" as RequestKinds,
+      content: text,
+      requestData,
+      flags,
+    };
+    const textPayload = this.buildRequest(payload);
+    return this.send(textPayload);
+  }
+
+  /**
+   * Alias for creating a request object for an event
+   * @param eventName: 'welcome'
+   * @param requestData: {a:1,b:2,c:3}
+   *
+   * Whether grpc gets transformed & other items depends on global config
+   *
+   */
+  public event(name: string, parameters: any = {}, requestData: any) {
+    const payload = {
+      kind: "event" as RequestKinds,
+      content: {
+        name,
+        parameters,
+      },
+      requestData,
+    };
+    return this.buildRequest(payload);
+  }
+
+  /**
+   * Alias for creating a request object for an event
+   * @param eventName: 'welcome'
+   * @param parameters: {a:1,b:2,c:3}
+   * @param requestData: {a:1,b:2,c:3}
+   * Whether grpc gets transformed & other items depends on global config
+   *
+   */
+  public sendEvent(
+    name: string,
+    parameters: any = {},
+    requestData: any,
+    flags: any
+  ) {
+    const payload = {
+      kind: "event" as RequestKinds,
+      content: {
+        name,
+        parameters,
+      },
+      requestData,
+      flags,
+    };
+    const event = this.buildRequest(payload);
+    return this.send(event);
+  }
+
+  /**
    * Returns a request payload that can be then be sent to DialogFlow's system
-   * See more: https://cloud.google.com/dialogflow/docs/reference/rest/v2/projects.agent.sessions/detectIntent#request-body
+   * See here for details: https://cloud.google.com/dialogflow/docs/reference/rest/v2/projects.agent.sessions/detectIntent#request-body
+   * See here for examples:
    *
    */
   public buildRequest(config: DFCheatRequestInput | string) {
@@ -203,7 +305,14 @@ export class RequestCheat {
     }
 
     const base = JSON.parse(requestTemplate);
-    base.session = this.session ? this.session : this.buildSession();
+    if (config.flags && config.flags.session) {
+      base.session = config.flags.session;
+      this.session = config.flags.session;
+    } else {
+      base.session = this.session ? this.session : this.buildSession();
+    }
+
+    this.__debug(`Session attached to request`, base.session);
 
     if (config.kind === "event") {
       const {
@@ -243,6 +352,41 @@ export class RequestCheat {
    */
   static buildSessionId(): string {
     return `${new Date().getTime()}-${String(Math.random()).slice(2)}`;
+  }
+
+  /**
+   * ## BuildSession
+   * Return fully qualified session string
+   * ```ts
+   * RequestCheat.buildSession(123456, 'bingo-project') // projects/bingo-project/agent/sessions/123456
+   *```
+   *
+   * @param session: string, ex. 1234567890
+   * @param project_id: string ex. bingo-project
+   */
+  static buildSession(session: string | number, project_id: string): string {
+    return `projects/${project_id}/agent/sessions/${session}`;
+  }
+
+  /**
+   * @static
+   * Transform Protstruct to JSON
+   * doc: https://github.com/valgaze/grpc_101.md
+   * Useful for webhookPayload & other items returned from backend
+   * @param payload
+   */
+  static __proto2json(payload: any) {
+    return struct.decode(payload);
+  }
+
+  /**
+   * Transform Protstruct to JSON
+   * doc: https://github.com/valgaze/grpc_101.md
+   * Useful for webhookPayload & other items returned from backend
+   * @param payload
+   */
+  static __json2proto(payload: JsonObject | any) {
+    return struct.encode(payload);
   }
 
   /**
@@ -630,13 +774,16 @@ export class RequestCheat {
       method: "POST",
       data: payload,
     };
-    console.log("sending....", configuration);
+    this.__debug("<Sending...>", configuration);
     const reply = await this.axiosInst(configuration).catch((e: any) => {
       console.log(`<RequestCheat.send>Catastrophic Error: ${e}`, e);
       throw new Error(
         `<From df-cheatcodes-base: RequestCheat.send> There may be an issue with your backend address: ${this.config.backend}`
       );
     });
+    if (this.session !== this._session) {
+      this.session = this._session;
+    }
     return reply || {};
   }
 }

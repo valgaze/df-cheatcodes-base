@@ -32,6 +32,84 @@ test("<buildRequest, text>", async (t: any) => {
   t.deepEqual(actual, expected);
 });
 
+test("<Alias, text>", async (t: any) => {
+  const text = `hi`;
+  const actual = client.text(text);
+  const expected = {
+    session: "1589863492594-6871437172438579",
+    queryInput: { text: { text: "hi", languageCode: "en_US" } },
+  };
+
+  t.deepEqual(actual, expected);
+});
+
+test("<Alias, event>", async (t: any) => {
+  const eventName = "my_event";
+  const parameters = { a: 1, b: 2, c: 3 };
+
+  const actual = client.event(eventName, parameters);
+  const expected = {
+    session: "1589863492594-6871437172438579",
+    queryInput: {
+      event: {
+        name: "my_event",
+        parameters: { a: 1, b: 2, c: 3 },
+        languageCode: "en_US",
+      },
+    },
+  };
+
+  t.deepEqual(actual, expected);
+});
+
+test("<Alias, requestData>", async (t: any) => {
+  client.updateTransformgrpc(true);
+
+  const eventName = "my_event";
+  const parameters = { a: 1, b: 2, c: 3 };
+  const requestData = { a: 1, b: 2, c: ["hi", "yay", "bonjour"] };
+  const actual = client.event(eventName, parameters, requestData);
+  const expected = {
+    session: "1589863492594-6871437172438579",
+    queryInput: {
+      event: {
+        name: "my_event",
+        parameters: {
+          fields: {
+            a: { kind: "numberValue", numberValue: 1 },
+            b: { kind: "numberValue", numberValue: 2 },
+            c: { kind: "numberValue", numberValue: 3 },
+          },
+        },
+        languageCode: "en_US",
+      },
+    },
+    queryParams: {
+      payload: {
+        fields: {
+          a: { kind: "numberValue", numberValue: 1 },
+          b: { kind: "numberValue", numberValue: 2 },
+          c: {
+            kind: "listValue",
+            listValue: {
+              values: [
+                { kind: "stringValue", stringValue: "hi" },
+                { kind: "stringValue", stringValue: "yay" },
+                { kind: "stringValue", stringValue: "bonjour" },
+              ],
+            },
+          },
+        },
+      },
+    },
+  };
+
+  console.log(`#> actual`, JSON.stringify(actual));
+  console.log(`#> expected`, JSON.stringify(expected));
+  client.updateTransformgrpc(false);
+  t.deepEqual(actual, expected);
+});
+
 test("<buildRequest, text>", async (t: any) => {
   const text = `hi`;
   const actual = client.buildRequest(text);
