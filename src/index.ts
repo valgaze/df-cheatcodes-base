@@ -69,6 +69,8 @@ export class RequestCheat {
     this.axiosInst = axios.create({
       baseURL: this.config.backend,
     });
+    // Aggressive cold start fix
+    this.axiosInst.defaults.timeout = 200000;
     this.languageCode = this.config.languageCode
       ? this.config.languageCode
       : defaults.languageCode;
