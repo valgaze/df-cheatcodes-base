@@ -58,6 +58,10 @@ export class RequestCheat {
   public transformgrpc: boolean;
   public debug: boolean;
   public otherplatforms: string[];
+  public coldstartretry: boolean;
+  public retry = true;
+  public numAttempts = 0;
+  public retryThreshold = 4;
 
   constructor(public config: DFCheatRequestConfig) {
     const defaults = {
@@ -65,15 +69,15 @@ export class RequestCheat {
       languageCode: "en_US",
       debug: false,
       otherplatforms: [],
+      coldstartretry: true,
     };
     this.axiosInst = axios.create({
       baseURL: this.config.backend,
     });
-    // Aggressive cold start fix
-    this.axiosInst.defaults.timeout = 200000;
     this.languageCode = this.config.languageCode
       ? this.config.languageCode
       : defaults.languageCode;
+    this.coldstartretry = defaults.coldstartretry;
     this.session = this.config.session
       ? this.config.session
       : RequestCheat.buildSessionId();
@@ -99,6 +103,14 @@ export class RequestCheat {
     if (this.debug) {
       console.log.apply(console, data);
     }
+  }
+
+  public _hang(duration = 6000) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, duration);
+    });
   }
 
   /**
@@ -591,7 +603,11 @@ export class RequestCheat {
     }
     const validText = (input: string) => {
       // Strip out dupes, irrelevant data
-      if (!input || input === " ") {
+      const simulatorMsg = `Cannot display response in Dialogflow simulator. Please test on the Google Assistant simulator instead.`;
+      const simCheck = (candidate: string = "", phrase: string = "") =>
+        candidate.toLowerCase().includes(phrase.toLowerCase());
+
+      if (!input || input === " " || simCheck(input, simulatorMsg)) {
         return false;
       }
       // closurized fulfillmentText
@@ -764,7 +780,12 @@ export class RequestCheat {
     return payload;
   }
 
-  async send(param: string | any) {
+  async send(param: string | any): Promise<any> {
+    this.numAttempts = this.numAttempts + 1;
+    if (this.numAttempts > this.retryThreshold) {
+      this.retry = false;
+    }
+
     let payload = param;
     if (typeof param === "string") {
       payload = this.buildRequest({
@@ -776,16 +797,30 @@ export class RequestCheat {
       method: "POST",
       data: payload,
     };
-    this.__debug("<Sending...>", configuration);
-    const reply = await this.axiosInst(configuration).catch((e: any) => {
-      console.log(`<RequestCheat.send>Catastrophic Error: ${e}`, e);
+    this.__debug("<RequestCheat.send Payload>", configuration);
+    let reply = await this.axiosInst(configuration).catch((e: any) => {
+      this.__debug(`<RequestCheat.send>Catastrophic Error: ${e}`, e);
       throw new Error(
         `<From df-cheatcodes-base: RequestCheat.send> There may be an issue with your backend address: ${this.config.backend}`
       );
     });
+
+    if (reply.data.webhookStatus && reply.data.webhookStatus.code === 4) {
+      if (this.coldstartretry && this.retry) {
+        this.__debug("Webhook timeout");
+        await this._hang();
+        return await this.send(param);
+      } else if (!this.retry) {
+        this.__debug(`<RequestCheat.send>Webhook time-out`);
+        throw new Error(
+          `<From df-cheatcodes-base: RequestCheat.send> It appears your fulfillment webhook timed out`
+        );
+      }
+    }
     if (this.session !== this._session) {
       this.session = this._session;
     }
+    this.retry = false;
     return reply || {};
   }
 }
