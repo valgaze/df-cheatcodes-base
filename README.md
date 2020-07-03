@@ -1,8 +1,8 @@
-![df-cheats](https://raw.githubusercontent.com/valgaze/df-cheatcodes-base/master/docs/assets/df_cheatcodes.gif)
-
 ```
 tl:dr; So easy you might think you're cheating at dialogflow!
 ```
+
+![df-cheats](https://raw.githubusercontent.com/valgaze/df-cheatcodes-base/master/docs/assets/df_cheatcodes.gif)
 
 ---
 
