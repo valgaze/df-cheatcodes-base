@@ -26,9 +26,9 @@ This library can be used stand-alone (no peerDependencies) or with the main **[d
 
 _Most helpful for "backend"/server stuff, collection of helpers and docs to augment the actions-on-google library. Generally the idea is to make working with rich components, contexts, data, 3rd-party APIs, and other tasks faster & easier_
 
-### df-cheatkit
+### df-starter-kit
 
-- **Details:** **[https://github.com/valgaze/df-cheatkit](https://github.com/valgaze/df-cheatkit)**
+- **Details:** **[https://github.com/valgaze/df-starter-kit](https://github.com/valgaze/df-starter-kit)**
 
 _Fully-loaded DialogFlow "starter" project with an agent, fulfillment template, and a frontend that renders rich components. Also has various ergonomic features to speed development like live-reload, types, tunneling, easy deploy/bundling to a web server or optimized for cloud functions_
 
