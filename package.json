@@ -39,7 +39,7 @@
   "peerDependencies": {},
   "dependencies": {
     "@types/lodash.has": "^4.5.6",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "lodash.get": "^4.4.2",
     "lodash.has": "^4.5.2",
     "pb-util": "^0.1.3"
